@@ -8,6 +8,7 @@ class GovServiceApiApplicationTests {
 
     @Test
     void contextLoads() {
+        // Noncompliant - method is empty
     }
 
 }
