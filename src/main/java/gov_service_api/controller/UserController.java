@@ -1,6 +1,7 @@
 package gov_service_api.controller;
 
 import gov_service_api.dto.user.*;
+import gov_service_api.model.*;
 import gov_service_api.service.*;
 import gov_service_api.dto.*;
 import jakarta.servlet.http.*;
@@ -14,7 +15,7 @@ import java.util.*;
 public class UserController {
 
     private static final String NO_LOGIN = "user not logged in";
-    private static final String PERSONAL_ID = "personal id";
+    private static final String PERSONAL_ID = "personalId";
 
     private UserService userService;
 
@@ -138,5 +139,12 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
                 new StringDTO(NO_LOGIN));
+    }
+
+    @GetMapping("/invoices")
+    public ResponseEntity<List<InvoiceDTO>> getInvoices(
+            @RequestParam Long userId,
+            @RequestParam String status) {
+        return ResponseEntity.ok(userService.getInvoicesByUserAndStatus(userId, status));
     }
 }

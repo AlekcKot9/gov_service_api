@@ -2,6 +2,7 @@ package gov_service_api.repository;
 
 import gov_service_api.model.*;
 import org.springframework.data.jpa.repository.*;
+import org.springframework.data.repository.query.*;
 import org.springframework.stereotype.*;
 
 import java.util.*;

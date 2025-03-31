@@ -1,5 +1,6 @@
 package gov_service_api.dto;
 
+import gov_service_api.model.*;
 import lombok.*;
 
 @Getter
@@ -14,6 +15,12 @@ public class FacilityDTO {
         this.id = id;
         this.name = name;
         this.price = price;
+    }
+
+    public FacilityDTO(Facility facility) {
+        this.id = facility.getId();
+        this.name = facility.getName();
+        this.price = facility.getPrice();
     }
 
     public FacilityDTO() {}

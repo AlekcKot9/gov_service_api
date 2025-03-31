@@ -1,5 +1,6 @@
 package gov_service_api.dto.user;
 
+import gov_service_api.model.*;
 import lombok.*;
 
 import java.time.*;
@@ -25,6 +26,14 @@ public class InvoiceDTO {
         this.remainder = remainder;
         this.status = status;
         this.createdAt = createdAt;
+    }
+
+    public InvoiceDTO(Invoice invoice) {
+        this.id = invoice.getId();
+        this.amount = invoice.getAmount();
+        this.remainder = invoice.getRemainder();
+        this.status = invoice.getStatus();
+        this.createdAt = invoice.getCreatedAt();
     }
 
     public InvoiceDTO() {}

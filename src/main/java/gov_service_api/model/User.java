@@ -1,5 +1,6 @@
 package gov_service_api.model;
 
+import gov_service_api.dto.user.*;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,7 +20,10 @@ public class User {
     private String personalId;
 
     @Column(nullable = false)
-    private String fullName;
+    private String firstName;
+
+    @Column(nullable = false)
+    private String lastName;
 
     @Column(nullable = false)
     private String phoneNumber;
@@ -30,19 +34,19 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false) // Сделаем поле nullable, если оно не передается в запросе
+    @Column(nullable = false)
     private Double balance = 0.0;
 
     @OneToMany(mappedBy = "user")
     private List<Invoice> invoices = new ArrayList<>();
 
-    public User(String personalId, String fullName, String phoneNumber,
-                String address, String password) {
-        this.personalId = personalId;
-        this.fullName = fullName;
-        this.phoneNumber = phoneNumber;
-        this.address = address;
-        this.password = password;
+    public User(SignupDTO signupDTO) {
+        this.personalId = signupDTO.getPersonalId();
+        this.firstName = signupDTO.getFirstName();
+        this.lastName = signupDTO.getLastName();
+        this.phoneNumber = signupDTO.getPhoneNumber();
+        this.address = signupDTO.getAddress();
+        this.password = signupDTO.getPassword();
     }
 
     public User() {}

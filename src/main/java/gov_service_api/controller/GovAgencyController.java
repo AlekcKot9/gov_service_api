@@ -1,6 +1,8 @@
 package gov_service_api.controller;
 
 import gov_service_api.dto.*;
+import gov_service_api.model.*;
+import gov_service_api.repository.*;
 import gov_service_api.service.*;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -11,10 +13,12 @@ import java.util.*;
 @RequestMapping("/govAgency")
 public class GovAgencyController {
 
+    private final FacilityRepository facilityRepository;
     private GovAgencyService govAgencyService;
 
-    public GovAgencyController(GovAgencyService govAgencyService) {
+    public GovAgencyController(GovAgencyService govAgencyService, FacilityRepository facilityRepository) {
         this.govAgencyService = govAgencyService;
+        this.facilityRepository = facilityRepository;
     }
 
     @PostMapping("/create")
@@ -68,5 +72,16 @@ public class GovAgencyController {
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
                 new StringDTO("Facility not deleted"));
+    }
+
+    @PostMapping("/getByFacilityId")
+    public ResponseEntity<List<GetGovAgencyByFacIdDTO>> getByFacilityId(
+            @RequestBody LongDTO facilityId) {
+
+        try {
+            return ResponseEntity.ok(govAgencyService.getByFacilityId(facilityId.getId()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
     }
 }

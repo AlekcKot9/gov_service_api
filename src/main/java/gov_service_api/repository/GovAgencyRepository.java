@@ -14,4 +14,7 @@ public interface GovAgencyRepository extends JpaRepository<GovAgency, Long> {
     Optional<GovAgency> findByName(String name);
 
     boolean existsByName(String name);
+
+    @Query("SELECT ga FROM GovAgency ga JOIN ga.facilities f WHERE f.id = :facilityId")
+    List<GovAgency> findByFacilityId(Long facilityId);
 }

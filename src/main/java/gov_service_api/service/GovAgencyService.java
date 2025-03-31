@@ -74,6 +74,7 @@ public class GovAgencyService {
         Optional<GovAgency> govAgencyOptional = govAgencyRepository.findByName(name);
 
         if (govAgencyOptional.isPresent()) {
+
             GovAgency govAgency = govAgencyOptional.get();
 
             List<FacilityDTO> facilitiesDTO = new ArrayList<>();
@@ -174,5 +175,21 @@ public class GovAgencyService {
         }
 
         return false;
+    }
+
+    public List<GetGovAgencyByFacIdDTO> getByFacilityId(Long facilityId) {
+
+        Optional<Facility> facilityOptional = facilityRepository.findById(facilityId);
+
+        if(facilityOptional.isPresent()) {
+            List<GovAgency> govAgencies = govAgencyRepository.findByFacilityId(facilityId);
+            List<GetGovAgencyByFacIdDTO> getGovAgenciesByFacIdDTOList = new ArrayList<>();
+            for(GovAgency govAgency : govAgencies) {
+                getGovAgenciesByFacIdDTOList.add(new GetGovAgencyByFacIdDTO(govAgency));
+            }
+            return getGovAgenciesByFacIdDTOList;
+        }
+
+        throw new EmptyStackException();
     }
 }

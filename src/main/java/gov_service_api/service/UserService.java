@@ -3,6 +3,7 @@ package gov_service_api.service;
 import gov_service_api.dto.user.*;
 import gov_service_api.model.*;
 import gov_service_api.repository.*;
+import gov_service_api.repository.cache.*;
 import gov_service_api.security.*;
 import jakarta.servlet.http.*;
 import org.springframework.beans.factory.annotation.*;
@@ -17,16 +18,19 @@ public class UserService {
     private FacilityRepository facilityRepository;
     private InvoiceRepository invoiceRepository;
     private PaymentRepository paymentRepository;
+    private UserDtoCache userDtoCache;
 
     @Autowired
     public UserService(UserRepository userRepository,
                        FacilityRepository facilityRepository,
                        InvoiceRepository invoiceRepository,
-                       PaymentRepository paymentRepository) {
+                       PaymentRepository paymentRepository,
+                       UserDtoCache userDtoCache) {
         this.userRepository = userRepository;
         this.facilityRepository = facilityRepository;
         this.invoiceRepository = invoiceRepository;
         this.paymentRepository = paymentRepository;
+        this.userDtoCache = userDtoCache;
     }
 
     public boolean signup(SignupDTO signupDTO) {
@@ -37,13 +41,7 @@ public class UserService {
 
             String hashedPassword = PasswordUtil.hashPassword(signupDTO.getPassword());
 
-            User user = new User(
-                    signupDTO.getPersonalId(),
-                    signupDTO.getFullName(),
-                    signupDTO.getPhoneNumber(),
-                    signupDTO.getAddress(),
-                    hashedPassword
-                    );
+            User user = new User(signupDTO);
 
             userRepository.save(user);
 
@@ -73,15 +71,17 @@ public class UserService {
 
     public UserGetDTO getProfile(String personalId) {
 
+        if (userDtoCache.isPresent(personalId)) {
+            System.out.println("User already in cache table");
+            return userDtoCache.getFromCache(personalId);
+        }
+
+        System.out.println("User not in cache table yet");
         User user = userRepository.findByPersonalId(personalId);
 
-        return new UserGetDTO(
-                user.getPersonalId(),
-                user.getFullName(),
-                user.getPhoneNumber(),
-                user.getAddress(),
-                user.getBalance()
-        );
+        userDtoCache.putInCache(personalId, new UserGetDTO(user));
+
+        return new UserGetDTO(user);
     }
 
     public boolean addInvoice(Long facilityId, String personalId) {
@@ -181,9 +181,14 @@ public class UserService {
         userGetDTO.setPersonalId(personalId);
         userGetDTO.setBalance(user.getBalance());
 
-        if (!userSetDTO.getFullName().isEmpty()) {
-            user.setFullName(userSetDTO.getFullName());
-            userGetDTO.setFullName(userSetDTO.getFullName());
+        if (!userSetDTO.getFirstName().isEmpty()) {
+            user.setFirstName(userSetDTO.getFirstName());
+            userGetDTO.setFirstName(userSetDTO.getFirstName());
+        }
+
+        if (!userSetDTO.getLastName().isEmpty()) {
+            user.setLastName(userSetDTO.getLastName());
+            userGetDTO.setLastName(userSetDTO.getLastName());
         }
 
         if (!userSetDTO.getPhoneNumber().isEmpty()) {
@@ -226,5 +231,18 @@ public class UserService {
         user.setInvoices(null);
         userRepository.save(user);
         userRepository.delete(user);
+    }
+
+    public List<InvoiceDTO> getInvoicesByUserAndStatus(Long userId, String status) {
+
+        List<Invoice> invoices = invoiceRepository.findByUserIdAndStatus(userId, status); // а это не работает
+
+        List<InvoiceDTO> invoicesDTO = new ArrayList<>();
+
+        for (Invoice invoice : invoices) {
+            invoicesDTO.add(new InvoiceDTO(invoice));
+        }
+
+        return invoicesDTO;
     }
 }
