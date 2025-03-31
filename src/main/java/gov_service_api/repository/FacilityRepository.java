@@ -10,4 +10,6 @@ import java.util.*;
 public interface FacilityRepository extends JpaRepository<Facility, Long> {
 
     Optional<Facility> findById(Long id);
+
+    Optional<Facility> findByName(String name);
 }

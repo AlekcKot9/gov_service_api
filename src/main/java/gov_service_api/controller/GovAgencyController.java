@@ -18,9 +18,9 @@ public class GovAgencyController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<StringDTO> create(@RequestBody GovAgencyDTO govAgencyDTO) {
+    public ResponseEntity<StringDTO> create(@RequestBody SetGovAgencyDTO setGovAgencyDTO) {
 
-        if (govAgencyService.create(govAgencyDTO)) {
+        if (govAgencyService.create(setGovAgencyDTO)) {
             return ResponseEntity.ok(new StringDTO("GovAgency create successfully"));
         }
 
@@ -29,7 +29,7 @@ public class GovAgencyController {
     }
 
     @GetMapping("/getAll")
-    public ResponseEntity<List<GovAgencyDTO>> getAll() {
+    public ResponseEntity<List<GetGovAgencyDTO>> getAll() {
 
         return ResponseEntity.ok(govAgencyService.getAll());
     }
@@ -48,6 +48,8 @@ public class GovAgencyController {
     @PostMapping("/addFacility")
     public ResponseEntity<StringDTO> addFacility(
             @RequestBody FacilityGogAgencyDTO facilityGogAgencyDTO) {
+
+        System.out.println(facilityGogAgencyDTO);
 
         if (govAgencyService.addFacility(facilityGogAgencyDTO)) {
             return ResponseEntity.ok(new StringDTO("Facility added successfully"));

@@ -19,16 +19,16 @@ public class GovAgencyService {
         this.facilityRepository = facilityRepository;
     }
 
-    public boolean create(GovAgencyDTO govAgencyDTO) {
+    public boolean create(SetGovAgencyDTO setGovAgencyDTO) {
 
-        boolean ans = govAgencyRepository.existsByName(govAgencyDTO.getName());
+        boolean ans = govAgencyRepository.existsByName(setGovAgencyDTO.getName());
 
         if (!ans) {
 
             GovAgency govAgency = new GovAgency(
-                    govAgencyDTO.getName(),
-                    govAgencyDTO.getType(),
-                    govAgencyDTO.getAddress()
+                    setGovAgencyDTO.getName(),
+                    setGovAgencyDTO.getType(),
+                    setGovAgencyDTO.getAddress()
             );
 
             govAgencyRepository.save(govAgency);
@@ -39,22 +39,34 @@ public class GovAgencyService {
         return false;
     }
 
-    public List<GovAgencyDTO> getAll() {
+    public List<GetGovAgencyDTO> getAll() {
 
         List<GovAgency> govAgencyList = govAgencyRepository.findAll();
 
-        List<GovAgencyDTO> govAgencyDTOList = new ArrayList<>();
+        List<GetGovAgencyDTO> getGovAgencyDTOList = new ArrayList<>();
 
         for (GovAgency govAgency : govAgencyList) {
-            GovAgencyDTO govAgencyDTO = new GovAgencyDTO(
+            List<FacilityDTO> facilitiesDTO  = new ArrayList<>();
+            for(Facility facility : govAgency.getFacilities()) {
+                FacilityDTO facilityDTO = new FacilityDTO(
+                        facility.getId(),
+                        facility.getName(),
+                        facility.getPrice()
+                );
+                facilitiesDTO.add(facilityDTO);
+            }
+
+            GetGovAgencyDTO getGovAgencyDTO = new GetGovAgencyDTO(
                     govAgency.getName(),
                     govAgency.getType(),
-                    govAgency.getAddress()
+                    govAgency.getAddress(),
+                    facilitiesDTO
             );
-            govAgencyDTOList.add(govAgencyDTO);
+
+            getGovAgencyDTOList.add(getGovAgencyDTO);
         }
 
-        return govAgencyDTOList;
+        return getGovAgencyDTOList;
     }
 
     public List<FacilityDTO> getFacilities(String name) {
@@ -98,10 +110,22 @@ public class GovAgencyService {
                 }
             }
 
-            Facility facility = new Facility(
-                    facilityGogAgencyDTO.getFacilityName(),
-                    facilityGogAgencyDTO.getPrice()
-            );
+            Optional<Facility> facilityOptional = facilityRepository.findByName(facilityGogAgencyDTO.getFacilityName());
+
+            Facility facility = new Facility();
+
+            if (facilityOptional.isPresent()) {
+                facility = facilityOptional.get();
+            } else {
+                facility = new Facility(
+                        facilityGogAgencyDTO.getFacilityName(),
+                        facilityGogAgencyDTO.getPrice()
+                );
+            }
+
+            List<GovAgency> govAgencies = facility.getGovAgencies();
+            govAgencies.add(govAgency);
+            facility.setGovAgencies(govAgencies);
             facilityRepository.save(facility);
 
             List<Facility> facilities = govAgency.getFacilities();
@@ -109,16 +133,12 @@ public class GovAgencyService {
             govAgency.setFacilities(facilities);
             govAgencyRepository.save(govAgency);
 
-            List<GovAgency> govAgencies = facility.getGovAgencies();
-            govAgencies.add(govAgency);
-            facility.setGovAgencies(govAgencies);
-            facilityRepository.save(facility);
-
             return true;
         }
 
         return false;
     }
+
 
     public boolean delFacility(FacilityGogAgencyDTO facilityGogAgencyDTO) {
 

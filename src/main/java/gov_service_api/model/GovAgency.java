@@ -26,8 +26,8 @@ public class GovAgency {
 
     @ManyToMany
     @JoinTable(
-            name = "govAgency_facility",
-            joinColumns = @JoinColumn(name = "govAgency_id"),
+            name = "gov_agency_facility",
+            joinColumns = @JoinColumn(name = "gov_agency_id"),
             inverseJoinColumns = @JoinColumn(name = "facility_id")
     )
     private List<Facility> facilities = new ArrayList<>();

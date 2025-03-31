@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
 @RestController
-@RequestMapping("/service")
+@RequestMapping("/facility")
 public class FacilityController {
 
     private FacilityService facilityService;
@@ -18,13 +18,13 @@ public class FacilityController {
         this.facilityService = facilityService;
     }
 
-    @GetMapping("/facilities")
+    @GetMapping("/get")
     public ResponseEntity<List<FacilityDTO>> getFacilities() {
         return new ResponseEntity<>(facilityService.getAllFacilities(), HttpStatus.OK);
     }
 
-    @GetMapping("/getInvoicesBy")
-    public ResponseEntity<List<InvoiceDTO>> getInvoiceBy(@RequestParam Long numFacility) {
+    @GetMapping("/getById")
+    public ResponseEntity<List<InvoiceDTO>> getById(@RequestParam Long numFacility) {
         return new ResponseEntity<>(facilityService.getInvloiceBy(numFacility), HttpStatus.OK);
     }
 }
