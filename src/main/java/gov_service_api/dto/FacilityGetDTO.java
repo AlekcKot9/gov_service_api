@@ -5,23 +5,23 @@ import lombok.*;
 
 @Getter
 @Setter
-public class FacilityDTO {
+public class FacilityGetDTO {
 
     private Long id;
     private String name;
     private Double price;
 
-    public FacilityDTO(Long id, String name, Double price) {
+    public FacilityGetDTO(Long id, String name, Double price) {
         this.id = id;
         this.name = name;
         this.price = price;
     }
 
-    public FacilityDTO(Facility facility) {
+    public FacilityGetDTO(Facility facility) {
         this.id = facility.getId();
         this.name = facility.getName();
         this.price = facility.getPrice();
     }
 
-    public FacilityDTO() {}
+    public FacilityGetDTO() {}
 }

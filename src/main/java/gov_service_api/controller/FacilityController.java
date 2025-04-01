@@ -18,13 +18,25 @@ public class FacilityController {
         this.facilityService = facilityService;
     }
 
-    @GetMapping("/get")
-    public ResponseEntity<List<FacilityDTO>> getFacilities() {
+    @GetMapping("/getAll")
+    public ResponseEntity<List<FacilityGetDTO>> getAll() {
         return new ResponseEntity<>(facilityService.getAllFacilities(), HttpStatus.OK);
     }
 
     @GetMapping("/getById")
     public ResponseEntity<List<InvoiceDTO>> getById(@RequestParam Long numFacility) {
         return new ResponseEntity<>(facilityService.getInvloiceBy(numFacility), HttpStatus.OK);
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<FacilityGetDTO> create(@RequestBody FacilitySetDTO facilitySetDTO) {
+
+        FacilityGetDTO facilityGetDTO = facilityService.create(facilitySetDTO);
+
+        if (facilityGetDTO == null) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(facilityGetDTO);
     }
 }

@@ -49,5 +49,15 @@ public class User {
         this.password = signupDTO.getPassword();
     }
 
+    public User(String personalId, String firstName, String lastName,
+                String phoneNumber, String address, String password) {
+        this.personalId = personalId;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.phoneNumber = phoneNumber;
+        this.address = address;
+        this.password = password;
+    }
+
     public User() {}
 }

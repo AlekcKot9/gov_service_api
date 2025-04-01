@@ -1,5 +1,6 @@
 package gov_service_api.model;
 
+import gov_service_api.dto.*;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,12 +25,14 @@ public class Facility {
     @OneToMany(mappedBy = "facility", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Invoice> invoices = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "facilities")
-    private List<GovAgency> govAgencies = new ArrayList<>();
-
     public Facility(String name, Double price) {
         this.name = name;
         this.price = price;
+    }
+
+    public Facility(FacilitySetDTO facilitySetDTO) {
+        this.name = facilitySetDTO.getName();
+        this.price = facilitySetDTO.getPrise();
     }
 
     public Facility() {}

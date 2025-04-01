@@ -41,7 +41,14 @@ public class UserService {
 
             String hashedPassword = PasswordUtil.hashPassword(signupDTO.getPassword());
 
-            User user = new User(signupDTO);
+            User user = new User(
+                    signupDTO.getPersonalId(),
+                    signupDTO.getFirstName(),
+                    signupDTO.getLastName(),
+                    signupDTO.getPhoneNumber(),
+                    signupDTO.getAddress(),
+                    hashedPassword
+            );
 
             userRepository.save(user);
 
@@ -56,6 +63,8 @@ public class UserService {
         User user = userRepository.findByPersonalId(loginDto.getPersonalId());
 
         boolean ans = PasswordUtil.checkPassword(loginDto.getPassword(), user.getPassword());
+
+        System.out.println(ans);
 
         if (ans) {
 
@@ -164,6 +173,9 @@ public class UserService {
             List<Payment> payments = invoice.getPayments();
             payments.add(payment);
             invoice.setRemainder(invoice.getRemainder() - addPaymentDTO.getAmount());
+            if(invoice.getRemainder()==0.0) {
+                invoice.setStatus("close");
+            }
             invoice.setPayments(payments);
             invoiceRepository.save(invoice);
 

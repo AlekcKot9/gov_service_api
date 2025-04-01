@@ -17,14 +17,14 @@ public class FacilityService {
         this.facilityRepository = facilityRepository;
     }
 
-    public List<FacilityDTO> getAllFacilities() {
+    public List<FacilityGetDTO> getAllFacilities() {
 
         List<Facility> facilities = facilityRepository.findAll(); //ГОРИТ КРАСНЫМ
 
-        List<FacilityDTO> facilitiesDTO = new ArrayList<>();
+        List<FacilityGetDTO> facilitiesDTO = new ArrayList<>();
 
         for (Facility facility : facilities) {
-            FacilityDTO facilityDTO = new FacilityDTO(
+            FacilityGetDTO facilityDTO = new FacilityGetDTO(
                     facility.getId(),
                     facility.getName(),
                     facility.getPrice()
@@ -55,5 +55,23 @@ public class FacilityService {
         }
 
         return invoicesDTO;
+    }
+
+    public FacilityGetDTO create(FacilitySetDTO facilitySetDTO) {
+
+        Optional<Facility> facilityOptional = facilityRepository.findByName(
+                facilitySetDTO.getName());
+
+        if (facilityOptional.isPresent()) {
+            return null;
+        }
+
+        Facility facility = new Facility(facilitySetDTO);
+        facilityRepository.save(facility);
+        facilityOptional = facilityRepository.findByName(facility.getName());
+        facility = facilityOptional.get();
+        FacilityGetDTO facilityGetDTO = new FacilityGetDTO(facility);
+        facilityGetDTO.setId(facility.getId());
+        return facilityGetDTO;
     }
 }
