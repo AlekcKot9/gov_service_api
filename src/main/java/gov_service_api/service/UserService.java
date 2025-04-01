@@ -235,7 +235,8 @@ public class UserService {
 
     public List<InvoiceDTO> getInvoicesByUserAndStatus(Long userId, String status) {
 
-        List<Invoice> invoices = invoiceRepository.findByUserIdAndStatus(userId, status); // а это не работает
+        List<Invoice> invoices = invoiceRepository.findByUserIdAndStatus(
+                userId, status); // а это не работает
 
         List<InvoiceDTO> invoicesDTO = new ArrayList<>();
 

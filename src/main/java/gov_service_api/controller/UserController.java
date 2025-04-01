@@ -93,6 +93,13 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
     }
 
+    @GetMapping("/invoices")
+    public ResponseEntity<List<InvoiceDTO>> getInvoices(
+            @RequestParam Long userId,
+            @RequestParam String status) {
+        return ResponseEntity.ok(userService.getInvoicesByUserAndStatus(userId, status));
+    }
+
     @PostMapping("/addPayment")
     public ResponseEntity<StringDTO> addPayment(@RequestBody AddPaymentDTO addPaymentDTO,
                                                 HttpServletRequest request) {
@@ -139,12 +146,5 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
                 new StringDTO(NO_LOGIN));
-    }
-
-    @GetMapping("/invoices")
-    public ResponseEntity<List<InvoiceDTO>> getInvoices(
-            @RequestParam Long userId,
-            @RequestParam String status) {
-        return ResponseEntity.ok(userService.getInvoicesByUserAndStatus(userId, status));
     }
 }

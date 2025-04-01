@@ -12,6 +12,8 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
 
     Optional<Invoice> findById(Long id);
 
-    @Query(value = "SELECT * FROM invoices WHERE user_id = :userId AND status = :status", nativeQuery = true)
-    List<Invoice> findByUserIdAndStatus(@Param("userId") Long userId, @Param("status") String status);
+    @Query(value = "SELECT * FROM invoices WHERE user_id = :userId AND status = :status",
+            nativeQuery = true)
+    List<Invoice> findByUserIdAndStatus(@Param("userId") Long userId,
+                                        @Param("status") String status);
 }

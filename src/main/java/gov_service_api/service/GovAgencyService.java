@@ -47,7 +47,7 @@ public class GovAgencyService {
 
         for (GovAgency govAgency : govAgencyList) {
             List<FacilityDTO> facilitiesDTO  = new ArrayList<>();
-            for(Facility facility : govAgency.getFacilities()) {
+            for (Facility facility : govAgency.getFacilities()) {
                 FacilityDTO facilityDTO = new FacilityDTO(
                         facility.getId(),
                         facility.getName(),
@@ -111,7 +111,8 @@ public class GovAgencyService {
                 }
             }
 
-            Optional<Facility> facilityOptional = facilityRepository.findByName(facilityGogAgencyDTO.getFacilityName());
+            Optional<Facility> facilityOptional = facilityRepository.findByName(
+                    facilityGogAgencyDTO.getFacilityName());
 
             Facility facility = new Facility();
 
@@ -181,10 +182,10 @@ public class GovAgencyService {
 
         Optional<Facility> facilityOptional = facilityRepository.findById(facilityId);
 
-        if(facilityOptional.isPresent()) {
+        if (facilityOptional.isPresent()) {
             List<GovAgency> govAgencies = govAgencyRepository.findByFacilityId(facilityId);
             List<GetGovAgencyByFacIdDTO> getGovAgenciesByFacIdDTOList = new ArrayList<>();
-            for(GovAgency govAgency : govAgencies) {
+            for (GovAgency govAgency : govAgencies) {
                 getGovAgenciesByFacIdDTOList.add(new GetGovAgencyByFacIdDTO(govAgency));
             }
             return getGovAgenciesByFacIdDTOList;

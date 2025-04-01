@@ -16,7 +16,8 @@ public class GovAgencyController {
     private final FacilityRepository facilityRepository;
     private GovAgencyService govAgencyService;
 
-    public GovAgencyController(GovAgencyService govAgencyService, FacilityRepository facilityRepository) {
+    public GovAgencyController(GovAgencyService govAgencyService,
+                               FacilityRepository facilityRepository) {
         this.govAgencyService = govAgencyService;
         this.facilityRepository = facilityRepository;
     }
