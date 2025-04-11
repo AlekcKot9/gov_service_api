@@ -48,6 +48,14 @@ public class UserController {
                 new StringDTO("User Login Failed"));
     }
 
+    @GetMapping("/logout")
+    public ResponseEntity<StringDTO> logout(HttpServletRequest request) {
+
+        userService.logout(request);
+
+        return ResponseEntity.ok(new StringDTO("User Logout Success"));
+    }
+
     @GetMapping("/getProfile")
     public ResponseEntity<UserGetDTO> getProfile(HttpServletRequest request) {
 
@@ -100,6 +108,11 @@ public class UserController {
         return ResponseEntity.ok(userService.getInvoicesByUserAndStatus(userId, status));
     }
 
+    @GetMapping("/getWithOpenInv")
+    public ResponseEntity<List<UserGetDTO>> getWithOpenInv(@RequestParam String status) {
+        return ResponseEntity.ok(userService.getWithOpenInv(status));
+    }
+
     @PostMapping("/addPayment")
     public ResponseEntity<StringDTO> addPayment(@RequestBody AddPaymentDTO addPaymentDTO,
                                                 HttpServletRequest request) {
@@ -138,6 +151,8 @@ public class UserController {
     public ResponseEntity<StringDTO> delete(HttpServletRequest request) {
 
         String personalId = (String) request.getSession().getAttribute(PERSONAL_ID);
+
+        
 
         if (personalId != null) {
             userService.delete(personalId);

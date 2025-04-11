@@ -1,6 +1,5 @@
 package gov_service_api.dto;
 
-import gov_service_api.model.*;
 import lombok.*;
 
 @Getter

@@ -71,6 +71,11 @@ public class FacilityService {
         facilityOptional = facilityRepository.findByName(facility.getName());
         facility = facilityOptional.get();
         FacilityGetDTO facilityGetDTO = new FacilityGetDTO(facility);
+        List<InvoiceDTO> invoicesDTO = new ArrayList<>();
+        for (Invoice invoice : facility.getInvoices()) {
+            invoicesDTO.add(new InvoiceDTO(invoice));
+        }
+        facilityGetDTO.setInvoicesDTO(invoicesDTO);
         facilityGetDTO.setId(facility.getId());
         return facilityGetDTO;
     }

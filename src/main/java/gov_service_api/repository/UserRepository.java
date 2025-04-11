@@ -17,4 +17,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByPersonalIdAndPassword(String personalId, String password);
 
     boolean existsByPersonalId(String personalId);
+
+    @Query(value = "SELECT DISTINCT u.* FROM users u "
+            + "JOIN invoices i ON i.user_id = u.id "
+            + "WHERE i.status = :status",
+            nativeQuery = true)
+    List<User> findByStatusInv(@Param("status") String status);
 }

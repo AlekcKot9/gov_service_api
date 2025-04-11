@@ -19,18 +19,21 @@ public class UserService {
     private InvoiceRepository invoiceRepository;
     private PaymentRepository paymentRepository;
     private UserDtoCache userDtoCache;
+    private InvoiceGetDTOCache invoiceGetDTOCache;
 
     @Autowired
     public UserService(UserRepository userRepository,
                        FacilityRepository facilityRepository,
                        InvoiceRepository invoiceRepository,
                        PaymentRepository paymentRepository,
-                       UserDtoCache userDtoCache) {
+                       UserDtoCache userDtoCache,
+                       InvoiceGetDTOCache invoiceGetDTOCache) {
         this.userRepository = userRepository;
         this.facilityRepository = facilityRepository;
         this.invoiceRepository = invoiceRepository;
         this.paymentRepository = paymentRepository;
         this.userDtoCache = userDtoCache;
+        this.invoiceGetDTOCache = invoiceGetDTOCache;
     }
 
     public boolean signup(SignupDTO signupDTO) {
@@ -64,11 +67,11 @@ public class UserService {
 
         boolean ans = PasswordUtil.checkPassword(loginDto.getPassword(), user.getPassword());
 
-        System.out.println(ans);
-
         if (ans) {
 
             HttpSession session = request.getSession();
+
+
 
             session.setAttribute("personalId", loginDto.getPersonalId());
 
@@ -76,6 +79,17 @@ public class UserService {
         }
 
         return false;
+    }
+
+    public boolean logout(HttpServletRequest request) {
+
+        HttpSession session = request.getSession();
+
+        session.removeAttribute("personalId");
+
+        userDtoCache.clearCache();
+
+        return true;
     }
 
     public UserGetDTO getProfile(String personalId) {
@@ -125,6 +139,12 @@ public class UserService {
 
     public List<InvoiceDTO> getInvoices(String personalId) {
 
+        if (invoiceGetDTOCache.isPresent(personalId)) {
+            System.out.println("use cache table");
+            return invoiceGetDTOCache.getFromCache(personalId);
+        }
+
+        System.out.println("User not in cache table yet");
         User user = userRepository.findByPersonalId(personalId);
 
         List<InvoiceDTO> invoicesDTO = new ArrayList<>();
@@ -139,6 +159,8 @@ public class UserService {
             );
             invoicesDTO.add(invoiceDTO);
         }
+
+        invoiceGetDTOCache.putInCache(personalId, invoicesDTO);
 
         return invoicesDTO;
     }
@@ -173,7 +195,7 @@ public class UserService {
             List<Payment> payments = invoice.getPayments();
             payments.add(payment);
             invoice.setRemainder(invoice.getRemainder() - addPaymentDTO.getAmount());
-            if(invoice.getRemainder()==0.0) {
+            if (invoice.getRemainder() == 0.0) {
                 invoice.setStatus("close");
             }
             invoice.setPayments(payments);
@@ -222,9 +244,22 @@ public class UserService {
         return userGetDTO;
     }
 
+    public List<UserGetDTO> getWithOpenInv(String status) {
+        List<User> users = userRepository.findByStatusInv(status);
+
+        List<UserGetDTO> userGetDTOs = new ArrayList<>();
+        for (User user : users) {
+            userGetDTOs.add(new UserGetDTO(user));
+        }
+
+        return userGetDTOs;
+    }
+
     public void delete(String personalId) {
 
         User user = userRepository.findByPersonalId(personalId);
+
+        userDtoCache.clearCache();
 
         List<Invoice> invoices = user.getInvoices();
 
