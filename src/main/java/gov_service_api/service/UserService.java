@@ -6,13 +6,18 @@ import gov_service_api.repository.*;
 import gov_service_api.repository.cache.*;
 import gov_service_api.security.*;
 import jakarta.servlet.http.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.Service;
-
 import java.util.*;
+
 
 @Service
 public class UserService {
+
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+    private static final String CLOSE = "close";
 
     private UserRepository userRepository;
     private FacilityRepository facilityRepository;
@@ -71,8 +76,6 @@ public class UserService {
 
             HttpSession session = request.getSession();
 
-
-
             session.setAttribute("personalId", loginDto.getPersonalId());
 
             return true;
@@ -95,11 +98,11 @@ public class UserService {
     public UserGetDTO getProfile(String personalId) {
 
         if (userDtoCache.isPresent(personalId)) {
-            System.out.println("User already in cache table");
+            logger.info("User already in cache table");
             return userDtoCache.getFromCache(personalId);
         }
 
-        System.out.println("User not in cache table yet");
+        logger.info("User not in cache table yet");
         User user = userRepository.findByPersonalId(personalId);
 
         userDtoCache.putInCache(personalId, new UserGetDTO(user));
@@ -137,15 +140,15 @@ public class UserService {
         return false;
     }
 
-    public List<InvoiceDTO> getInvoices(String personalId) {
+    public List<InvoiceDTO> getInvoices(Long personalId) {
 
         if (invoiceGetDTOCache.isPresent(personalId)) {
-            System.out.println("use cache table");
+            logger.info("use cache table");
             return invoiceGetDTOCache.getFromCache(personalId);
         }
 
-        System.out.println("User not in cache table yet");
-        User user = userRepository.findByPersonalId(personalId);
+        logger.info("User not in cache table yet");
+        User user = userRepository.findByPersonalId(personalId.toString());
 
         List<InvoiceDTO> invoicesDTO = new ArrayList<>();
 
@@ -178,7 +181,7 @@ public class UserService {
 
             Invoice invoice = invoiceOptional.get();
 
-            if (invoice.getStatus().equals("close")) {
+            if (invoice.getStatus().equals(CLOSE)) {
                 return false;
             }
 
@@ -196,7 +199,7 @@ public class UserService {
             payments.add(payment);
             invoice.setRemainder(invoice.getRemainder() - addPaymentDTO.getAmount());
             if (invoice.getRemainder() == 0.0) {
-                invoice.setStatus("close");
+                invoice.setStatus(CLOSE);
             }
             invoice.setPayments(payments);
             invoiceRepository.save(invoice);
@@ -264,7 +267,7 @@ public class UserService {
         List<Invoice> invoices = user.getInvoices();
 
         for (Invoice invoice : invoices) {
-            if (invoice.getStatus().equals("close")) {
+            if (invoice.getStatus().equals(CLOSE)) {
                 invoice.setFacility(null);
                 invoice.setUser(null);
                 invoiceRepository.save(invoice);

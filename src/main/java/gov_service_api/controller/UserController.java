@@ -95,7 +95,7 @@ public class UserController {
         String personalId = (String) request.getSession().getAttribute(PERSONAL_ID);
 
         if (personalId != null) {
-            return ResponseEntity.ok(userService.getInvoices(personalId));
+            return ResponseEntity.ok(userService.getInvoices(Long.parseLong(personalId)));
         }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
