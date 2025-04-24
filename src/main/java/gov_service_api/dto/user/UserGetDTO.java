@@ -11,6 +11,7 @@ import java.util.*;
 @AllArgsConstructor
 public class UserGetDTO {
 
+
     private String personalId;
 
     private String firstName;

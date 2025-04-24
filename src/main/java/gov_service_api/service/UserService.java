@@ -66,6 +66,22 @@ public class UserService {
         return false;
     }
 
+    public List<User> signupUsers(List<SignupDTO> dtoList) {
+        List<User> users = new ArrayList<>();
+
+        for (SignupDTO dto : dtoList) {
+            boolean ans = userRepository.existsByPersonalId(dto.getPersonalId());
+
+            if (!ans) {
+                User user = new User(dto);
+
+                users.add(user);
+            }
+        }
+
+        return userRepository.saveAll(users);
+    }
+
     public boolean login(LoginDTO loginDto, HttpServletRequest request) {
 
         User user = userRepository.findByPersonalId(loginDto.getPersonalId());
@@ -133,6 +149,14 @@ public class UserService {
             invoices.add(invoice);
             user.setInvoices(invoices);
             userRepository.save(user);
+
+            if (invoiceGetDTOCache.isPresent(Long.parseLong(personalId))) {
+                logger.info("Add invoice in cache table");
+                List<InvoiceDTO> invoiceDTOList = invoiceGetDTOCache
+                        .getFromCache(Long.parseLong(personalId));
+                invoiceDTOList.add(new InvoiceDTO(invoice));
+                invoiceGetDTOCache.putInCache(Long.parseLong(personalId), invoiceDTOList);
+            }
             
             return true;
         }

@@ -4,7 +4,10 @@ import gov_service_api.dto.user.*;
 import gov_service_api.model.*;
 import gov_service_api.service.*;
 import gov_service_api.dto.*;
+import io.swagger.v3.oas.annotations.*;
+import io.swagger.v3.oas.annotations.tags.*;
 import jakarta.servlet.http.*;
+import jakarta.validation.*;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,6 +15,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/user")
+@Tag(name = "Пользователь", description = "Эндпоинты для работы с пользователем")
 public class UserController {
 
     private static final String NO_LOGIN = "user not logged in";
@@ -23,8 +27,9 @@ public class UserController {
         this.userService = userService;
     }
 
+    @Operation(summary = "Зарегестрировать")
     @PostMapping("/signup")
-    public ResponseEntity<StringDTO> signup(@RequestBody SignupDTO signupDTO) {
+    public ResponseEntity<StringDTO> signup(@Valid @RequestBody SignupDTO signupDTO) {
 
         if (userService.signup(signupDTO)) {
             return ResponseEntity.ok(new StringDTO("User registered successfully"));
@@ -34,9 +39,16 @@ public class UserController {
                 new StringDTO("Username already exists"));
     }
 
+    @PostMapping("/bulk")
+    public ResponseEntity<List<User>> createUsersBulk(@RequestBody @Valid List<SignupDTO> users) {
+        List<User> createdUsers = userService.signupUsers(users);
+        return ResponseEntity.ok(createdUsers);
+    }
+
+    @Operation(summary = "Вход в аккаунт")
     @PostMapping("/login")
     public ResponseEntity<StringDTO> login(
-            @RequestBody LoginDTO loginDto, HttpServletRequest request) {
+            @Valid @RequestBody LoginDTO loginDto, HttpServletRequest request) {
 
         boolean authenticated = userService.login(loginDto, request);
 
@@ -48,6 +60,7 @@ public class UserController {
                 new StringDTO("User Login Failed"));
     }
 
+    @Operation(summary = "Выход из аккаунта")
     @GetMapping("/logout")
     public ResponseEntity<StringDTO> logout(HttpServletRequest request) {
 
@@ -56,6 +69,7 @@ public class UserController {
         return ResponseEntity.ok(new StringDTO("User Logout Success"));
     }
 
+    @Operation(summary = "Получить провиль пользователя")
     @GetMapping("/getProfile")
     public ResponseEntity<UserGetDTO> getProfile(HttpServletRequest request) {
 
@@ -68,6 +82,7 @@ public class UserController {
         return ResponseEntity.ok(userService.getProfile(personalId));
     }
 
+    @Operation(summary = "Добавить счет пользователю")
     @PostMapping("/addInvoice")
     public ResponseEntity<StringDTO> addInvoice(
             @RequestBody LongDTO facilityId, HttpServletRequest request) {
@@ -89,6 +104,7 @@ public class UserController {
         ));
     }
 
+    @Operation(summary = "Получить все счета пользлвателя")
     @GetMapping("/getInvoices")
     public ResponseEntity<List<InvoiceDTO>> getInvoices(HttpServletRequest request) {
 
@@ -101,6 +117,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
     }
 
+    @Operation(summary = "Получить получить все счета пользователя по id")
     @GetMapping("/invoices")
     public ResponseEntity<List<InvoiceDTO>> getInvoices(
             @RequestParam Long userId,
@@ -108,11 +125,13 @@ public class UserController {
         return ResponseEntity.ok(userService.getInvoicesByUserAndStatus(userId, status));
     }
 
+    @Operation(summary = "Получить только открытые счета")
     @GetMapping("/getWithOpenInv")
     public ResponseEntity<List<UserGetDTO>> getWithOpenInv(@RequestParam String status) {
         return ResponseEntity.ok(userService.getWithOpenInv(status));
     }
 
+    @Operation(summary = "Добавить оплату")
     @PostMapping("/addPayment")
     public ResponseEntity<StringDTO> addPayment(@RequestBody AddPaymentDTO addPaymentDTO,
                                                 HttpServletRequest request) {
@@ -134,9 +153,10 @@ public class UserController {
         ));
     }
 
+    @Operation(summary = "Изменения информации пользователя")
     @PatchMapping("/changeInf")
     public ResponseEntity<UserGetDTO> changeInf(
-            @RequestBody UserSetDTO userSetDTO, HttpServletRequest request) {
+            @Valid @RequestBody UserSetDTO userSetDTO, HttpServletRequest request) {
 
         String personalId = (String) request.getSession().getAttribute(PERSONAL_ID);
 
@@ -147,6 +167,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
     }
 
+    @Operation(summary = "Удалить аккаунт")
     @DeleteMapping("/delete")
     public ResponseEntity<StringDTO> delete(HttpServletRequest request) {
 

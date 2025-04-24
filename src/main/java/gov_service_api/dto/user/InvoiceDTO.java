@@ -1,6 +1,7 @@
 package gov_service_api.dto.user;
 
 import gov_service_api.model.*;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.time.*;
