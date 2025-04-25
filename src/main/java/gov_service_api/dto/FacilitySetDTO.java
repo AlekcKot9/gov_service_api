@@ -17,4 +17,6 @@ public class FacilitySetDTO {
         this.name = name;
         this.prise = prise;
     }
+
+    public FacilitySetDTO() {}
 }

@@ -1,5 +1,6 @@
 package gov_service_api.controller;
 
+import gov_service_api.exception.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -34,5 +35,28 @@ public class GlobalExcHandler {
 
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
-}
 
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<String> handleUserAlreadyExists(UserAlreadyExistsException ex) {
+        logger.warn("Регистрация: пользователь уже существует - {}", ex.getMessage());
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(WeakPasswordException.class)
+    public ResponseEntity<String> handleWeakPassword(WeakPasswordException ex) {
+        logger.warn("Регистрация: слабый пароль - {}", ex.getMessage());
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InvalidPhoneNumberException.class)
+    public ResponseEntity<String> handleInvalidPhoneNumber(InvalidPhoneNumberException ex) {
+        logger.warn("Регистрация: некорректный номер телефона - {}", ex.getMessage());
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(InvalidPersonalIdException.class)
+    public ResponseEntity<String> handleInvalidPersonalId(InvalidPersonalIdException ex) {
+        logger.warn("Регистрация: некорректный ИИН - {}", ex.getMessage());
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+}

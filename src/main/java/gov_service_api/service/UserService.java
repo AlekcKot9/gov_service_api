@@ -1,6 +1,7 @@
 package gov_service_api.service;
 
 import gov_service_api.dto.user.*;
+import gov_service_api.exception.*;
 import gov_service_api.model.*;
 import gov_service_api.repository.*;
 import gov_service_api.repository.cache.*;
@@ -42,10 +43,22 @@ public class UserService {
     }
 
     public boolean signup(SignupDTO signupDTO) {
+        try {
+            if (signupDTO.getPersonalId() == null || signupDTO.getPersonalId().isBlank()) {
+                throw new InvalidPersonalIdException("ИИН не может быть пустым");
+            }
 
-        boolean ans = userRepository.existsByPersonalId(signupDTO.getPersonalId());
+            if (signupDTO.getPassword() == null || signupDTO.getPassword().isBlank()) {
+                throw new WeakPasswordException("Пароль не может быть пустым");
+            }
 
-        if (!ans) {
+            if (!signupDTO.getPhoneNumber().matches("\\+?[0-9\\- ]{10,15}")) {
+                throw new InvalidPhoneNumberException("Некорректный номер телефона");
+            }
+
+            if (userRepository.existsByPersonalId(signupDTO.getPersonalId())) {
+                throw new UserAlreadyExistsException("Пользователь с таким ИИН уже существует");
+            }
 
             String hashedPassword = PasswordUtil.hashPassword(signupDTO.getPassword());
 
@@ -59,12 +72,20 @@ public class UserService {
             );
 
             userRepository.save(user);
-
             return true;
+        } catch (InvalidPersonalIdException | WeakPasswordException |
+                 InvalidPhoneNumberException | UserAlreadyExistsException e) {
+            logger.error("Ошибка регистрации: {}", e.getMessage(), e);
+            throw e;
+        } catch (Exception e) {
+            logger.error("Непредвиденная ошибка при регистрации", e);
+            throw new RuntimeException("Произошла ошибка при регистрации", e);
+        } finally {
+            logger.info("Завершён метод signup()");
         }
-
-        return false;
     }
+
+
 
     public List<User> signupUsers(List<SignupDTO> dtoList) {
         List<User> users = new ArrayList<>();
