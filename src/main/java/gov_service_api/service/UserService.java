@@ -76,7 +76,7 @@ public class UserService {
         } catch (InvalidPersonalIdException | WeakPasswordException
                  | InvalidPhoneNumberException | UserAlreadyExistsException e) {
             logger.error("Ошибка регистрации: {}", e.getMessage(), e);
-            throw e;
+            throw new RegistrationException("Не удалось зарегистрировать пользователя", e);
         } finally {
             logger.info("Завершён метод signup()");
         }
