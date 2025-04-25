@@ -95,15 +95,15 @@ class FacilityServiceTest {
     @Test
     void create_ShouldSetCorrectFields() {
         // Arrange
-        FacilitySetDTO testSetDTO = new FacilitySetDTO();
-        testSetDTO.setName("New Facility");
-        testSetDTO.setPrise(1500.0);
+        FacilitySetDTO testSetDTOss = new FacilitySetDTO();
+        testSetDTOss.setName("New Facility");
+        testSetDTOss.setPrise(1500.0);
 
         ArgumentCaptor<Facility> facilityCaptor = ArgumentCaptor.forClass(Facility.class);
 
         when(facilityRepository.findByName("New Facility"))
                 .thenReturn(Optional.empty()) // Первый вызов
-                .thenReturn(Optional.of(new Facility(testSetDTO))); // Второй вызов
+                .thenReturn(Optional.of(new Facility(testSetDTOss))); // Второй вызов
         when(facilityRepository.save(facilityCaptor.capture())).thenAnswer(invocation -> {
             Facility f = invocation.getArgument(0);
             f.setId(1L); // Эмулируем присвоение ID
@@ -111,7 +111,7 @@ class FacilityServiceTest {
         });
 
         // Act
-        facilityService.create(testSetDTO);
+        facilityService.create(testSetDTOss);
 
         // Assert
         Facility capturedFacility = facilityCaptor.getValue();

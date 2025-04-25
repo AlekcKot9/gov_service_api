@@ -19,12 +19,13 @@ public class GlobalExcHandler {
     private static final Logger logger = LoggerFactory.getLogger(GlobalExcHandler.class);
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, Object>> handleValidationErrors(MethodArgumentNotValidException ex) {
+    public ResponseEntity<Map<String, Object>> handleValidationErrors(
+            MethodArgumentNotValidException ex) {
         List<String> errors = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
                 .map(err -> err.getDefaultMessage())
-                .collect(Collectors.toList());
+                .toList();
 
         logger.warn("Ошибка валидации: {}", errors);
 

@@ -340,10 +340,11 @@ class UserServiceTest {
     @Test
     void login_WithNonExistingUser_ThrowsException() {
         when(userRepository.findByPersonalId("invalid")).thenReturn(null);
-        assertThrows(NullPointerException.class, () ->
-                userService.login(new LoginDTO("invalid", "pass"), request)
-        );
+        LoginDTO loginDTO = new LoginDTO("invalid", "pass");
+
+        assertThrows(NullPointerException.class, () -> userService.login(loginDTO, request));
     }
+
 
     @Test
     void addInvoice_WhenFacilityNotFound_ReturnsFalse() {

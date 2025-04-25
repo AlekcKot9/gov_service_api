@@ -73,13 +73,10 @@ public class UserService {
 
             userRepository.save(user);
             return true;
-        } catch (InvalidPersonalIdException | WeakPasswordException |
-                 InvalidPhoneNumberException | UserAlreadyExistsException e) {
+        } catch (InvalidPersonalIdException | WeakPasswordException
+                 | InvalidPhoneNumberException | UserAlreadyExistsException e) {
             logger.error("Ошибка регистрации: {}", e.getMessage(), e);
             throw e;
-        } catch (Exception e) {
-            logger.error("Непредвиденная ошибка при регистрации", e);
-            throw new RuntimeException("Произошла ошибка при регистрации", e);
         } finally {
             logger.info("Завершён метод signup()");
         }
@@ -178,7 +175,7 @@ public class UserService {
                 invoiceDTOList.add(new InvoiceDTO(invoice));
                 invoiceGetDTOCache.putInCache(Long.parseLong(personalId), invoiceDTOList);
             }
-            
+
             return true;
         }
 

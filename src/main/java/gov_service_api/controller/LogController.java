@@ -27,8 +27,10 @@ import org.springframework.web.server.ResponseStatusException;
 @AllArgsConstructor
 @Tag(name = "Логирование", description = "Эндпоинты для получения лог-файлов")
 public class LogController {
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+    private static final DateTimeFormatter DATE_FORMATTER
+            = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final DateTimeFormatter TIME_FORMATTER
+            = DateTimeFormatter.ofPattern("HH:mm");
 
     @Operation(summary = "Получить лог по определённой дате")
     @GetMapping("/{date}")
@@ -46,8 +48,10 @@ public class LogController {
                         "Лог-файл за дату " + date + " не найден");
             }
 
-            LocalTime fromTime = from != null ? LocalTime.parse(from, TIME_FORMATTER) : LocalTime.MIN;
-            LocalTime toTime = to != null ? LocalTime.parse(to, TIME_FORMATTER) : LocalTime.MAX;
+            LocalTime fromTime = from != null ? LocalTime.parse(
+                    from, TIME_FORMATTER) : LocalTime.MIN;
+            LocalTime toTime = to != null ? LocalTime.parse(
+                    to, TIME_FORMATTER) : LocalTime.MAX;
 
             try (Stream<String> lines = Files.lines(filePath)) {
                 List<String> filteredLines = lines
@@ -67,7 +71,8 @@ public class LogController {
         } catch (ResponseStatusException e) {
             throw e;
         } catch (Exception e) {
-            throw new ResponseStatusException(BAD_REQUEST, "Неверный формат запроса: " + e.getMessage());
+            throw new ResponseStatusException(BAD_REQUEST,
+                    "Неверный формат запроса: " + e.getMessage());
         }
     }
 }

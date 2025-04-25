@@ -17,7 +17,8 @@ public class LoggingAspect {
     // До вызова метода
     @Before("controllerMethods()")
     public void logBefore(JoinPoint joinPoint) {
-        log.info("Вызов метода: {} с аргументами: {}", joinPoint.getSignature(), joinPoint.getArgs());
+        log.info("Вызов метода: {} с аргументами: {}",
+                joinPoint.getSignature(), joinPoint.getArgs());
     }
 
     // После успешного выполнения
